@@ -1,0 +1,14 @@
+{
+  "name": "jim/devtools",
+  "description": "devtools gemaakt door jim",
+  "require": {
+    "php": ">=7.1",
+    "symfony/console": "^3.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "devtools\\": "src"
+    }
+  },
+  "bin": ["tools"]
+}

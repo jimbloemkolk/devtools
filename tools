@@ -1,0 +1,46 @@
+#!/usr/bin/env php
+
+<?php
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+
+(new Application('devtools', '1.0.0'))
+    ->register('reset-timer')
+        ->addArgument('minutes', InputArgument::OPTIONAL, 'minutes', 25)
+        ->setCode(function(InputInterface $input, OutputInterface $output) {
+            exec('say "Start the timer."');
+
+            $minutes = (int)$input->getArgument('minutes');
+            $timeEnd = time() + $minutes * 60;
+
+            $progressBar = new ProgressBar($output, $minutes * 60);
+            $progressBar->start();
+
+            $minutesRemaining = $minutes;
+
+            while ($timeEnd > time()) {
+                $progressBar->advance();
+                sleep(1);
+
+                $remaining = ($timeEnd - time()) / 60;
+                if ($remaining < $minutesRemaining) {
+                    exec(' say "' . $minutesRemaining . ' minutes remaining."');
+                    $minutesRemaining--;
+                }
+            }
+
+            $progressBar->finish();
+
+            exec('say "And. it\'s gone."');
+            exec('git add .');
+            exec('git reset --hard');
+        })
+    ->getApplication()
+    ->setDefaultCommand('reset-timer', false)
+    ->run();
